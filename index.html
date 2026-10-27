@@ -1567,12 +1567,12 @@
       <h3 data-en="Active grants" data-fr="Subventions actives">Active grants</h3>
       <div class="grants-list">
         <div class="grant-item">
-          <div class="grant-top"><span class="agency" data-en="" data-fr=""></span><span class="grant-years">2026–2031</span></div>
+          <div class="grant-top"><span class="agency" data-en="NSERC / Discovery Grants program (individual)" data-fr="CRSNG / Programme de subventions à la découverte (subvention individuelle)">NSERC / Discovery Grants program (individual)</span><span class="grant-years">2026–2031</span></div>
           <div class="title" data-en="Statistical methods for multivariate time series with complex data" data-fr="Méthodes statistiques pour les séries chronologiques multivariées avec données complexes">Statistical methods for multivariate time series with complex data</div>
           <div class="role" data-en="B. Nasri (PI)" data-fr="B. Nasri (chercheuse principale)">B. Nasri (PI)</div>
         </div>
         <div class="grant-item">
-          <div class="grant-top"><span class="agency" data-en="" data-fr=""></span><span class="grant-years">2026–2031</span></div>
+          <div class="grant-top"><span class="agency" data-en="CIHR / Team Grant: Bringing Biology to Cancer Prevention - General Pool" data-fr="IRSC / Subvention d’équipe : La biologie au service de la prévention du cancer - volet général">CIHR / Team Grant: Bringing Biology to Cancer Prevention - General Pool</span><span class="grant-years">2026–2031</span></div>
           <div class="title" data-en="Environmental eXposure Profiling for Signatures of Early ColoRectal Cancer (EXPOSE-CRC)" data-fr="Profilage des expositions environnementales pour les signatures du cancer colorectal précoce (EXPOSE-CRC)">Environmental eXposure Profiling for Signatures of Early ColoRectal Cancer (EXPOSE-CRC)</div>
           <div class="role" data-en="B. Nasri (co-PI with V. Ho, L.-H. Tai, D. von Renteln)" data-fr="B. Nasri (cochercheuse principale avec V. Ho, L.-H. Tai, D. von Renteln)">B. Nasri (co-PI with V. Ho, L.-H. Tai, D. von Renteln)</div>
         </div>
@@ -2323,7 +2323,7 @@
   "role": "Postdoctoral Fellow",
   "roleFr": "Postdoctorant",
   "affiliation": "Université de Montréal",
-  "bio": "PhD from McGill University, with background in computer science and mathematics. Research interests include high-dimensional statistics, dependent data modelling, computational statistics, computer vision, and machine learning applied to health sciences.",
+  "bio": "PhD from McGill University, with a background in computer science and mathematics. Research interests include high-dimensional statistics, dependent data modelling, computational statistics, computer vision, and machine learning applied to health sciences.",
   "areas": [
    "High-dimensional",
    "Machine learning"
@@ -2391,7 +2391,12 @@
    "Infectious diseases"
   ],
   "awards": [
-   "FRQ Scholarship"
+   "FRQ Scholarship",
+   "IDRC Scholarship"
+  ],
+  "awardsFr": [
+   "Bourse du FRQ",
+   "Bourse du CRDI"
   ],
   "supervisors": "Kate Zinszer (dir.) & Bouchra Nasri (co-dir.)",
   "photoId": "photo-claudia-robayo"
@@ -2403,7 +2408,7 @@
   "role": "Ph.D. Candidate — Public Health, Epidemiology",
   "roleFr": "Candidate au doctorat — Santé publique, Épidémiologie",
   "affiliation": "Université de Montréal",
-  "bio": "MD (Latin American School of Medicine, Cuba), MPH (Université de Montréal). Her doctoral research examines maternal health and multiple occupational exposures. Her broader research interests include infectious disease epidemiology and modelling and public health surveillance. She is also interested in the contribution of machine-learning methods to surveillance and prediction, particularly when traditional health data are combined with complementary sources such as social media and search trends.",
+  "bio": "MD (Latin American School of Medicine, Cuba), MPH (Université de Montréal). Her doctoral research examines maternal health and multiple occupational exposures. Her broader research interests include infectious disease epidemiology and modelling, and public health surveillance. She is also interested in the contribution of machine-learning methods to surveillance and prediction, particularly when traditional health data are combined with complementary sources such as social media and search trends.",
   "areas": [
    "Infectious diseases",
    "Epidemiology"
@@ -2777,16 +2782,38 @@
     render();
   });
 
-  // Publication filter visual toggle (cosmetic)
+  // Publication year filter
+  function applyPubFilter(selectedYear) {
+    document.querySelectorAll(".pub-item").forEach(item => {
+      const badge = item.querySelector(".year-badge");
+      if (!badge) { item.style.display = ""; return; }
+      item.style.display = (selectedYear === "all" || badge.textContent.trim() === selectedYear) ? "" : "none";
+    });
+  }
+
   document.querySelectorAll(".pub-filter").forEach(b => {
     b.addEventListener("click", () => {
-      // Toggle within its group (year vs theme — simple cosmetic)
-      const isTheme = b.textContent === "All themes" || ["Inf. diseases","Dependence","Time series"].includes(b.textContent);
-      document.querySelectorAll(".pub-filter").forEach(o => {
-        const oTheme = o.textContent === "All themes" || ["Inf. diseases","Dependence","Time series"].includes(o.textContent);
-        if (oTheme === isTheme) o.classList.remove("active");
-      });
-      b.classList.add("active");
+      const years = ["2026","2025","2024","2023","2022","2021","2020"];
+      const isYear = years.includes(b.textContent.trim());
+      const isAll = b.getAttribute("data-en") === "All years";
+
+      if (isYear || isAll) {
+        document.querySelectorAll(".pub-filter").forEach(o => {
+          if (years.includes(o.textContent.trim()) || o.getAttribute("data-en") === "All years") {
+            o.classList.remove("active");
+          }
+        });
+        b.classList.add("active");
+        applyPubFilter(isAll ? "all" : b.textContent.trim());
+      } else {
+        // Theme button — visual only
+        document.querySelectorAll(".pub-filter").forEach(o => {
+          if (!years.includes(o.textContent.trim()) && o.getAttribute("data-en") !== "All years") {
+            o.classList.remove("active");
+          }
+        });
+        b.classList.add("active");
+      }
     });
   });
 
